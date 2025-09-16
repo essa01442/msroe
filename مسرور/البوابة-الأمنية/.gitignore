@@ -1,0 +1,63 @@
+# قواعد البيانات الأمنية
+*.db
+*.sqlite
+*.sqlite3
+
+# ملفات Python المؤقتة
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# ملفات البيئة الافتراضية
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# ملفات IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# رموز QR المولدة (يمكن إعادة توليدها)
+qr_codes/*.png
+qr_codes/*.jpg
+qr_codes/*.jpeg
+
+# سجلات النظام
+logs/
+*.log
+
+# ملفات النسخ الاحتياطية
+backup/
+*.bak
+*.backup
+
+# ملفات مؤقتة أخرى
+tmp/
+temp/
+.tmp/
+.temp/
+
+# مفاتيح التشفير (يجب عدم رفعها للـ repository)
+*.key
+*.pem
+*.p12
+*.pfx
+
+# ملفات التكوين الحساسة
+config.ini
+settings.py
+secrets.json
+
+# ملفات النظام
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini

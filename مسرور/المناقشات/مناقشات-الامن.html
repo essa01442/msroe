@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مناقشات الأمن السيبراني</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+            padding: 20px;
+            margin: 0;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #1a3c5e;
+            text-align: center;
+            margin-bottom: 25px;
+            border-bottom: 2px solid #3a6ea5;
+            padding-bottom: 15px;
+        }
+        h2 {
+            color: #2c5282;
+            margin-top: 25px;
+            border-right: 4px solid #4299e1;
+            padding-right: 10px;
+        }
+        .topic {
+            margin-bottom: 30px;
+            background-color: #f0f7fb;
+            padding: 20px;
+            border-radius: 8px;
+            border-right: 3px solid #63b3ed;
+        }
+        .date {
+            color: #718096;
+            font-size: 0.85em;
+            margin-bottom: 10px;
+        }
+        .participant {
+            font-weight: bold;
+            color: #2b6cb0;
+        }
+        .comment {
+            background-color: #fff;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .highlight {
+            background-color: #ebf8ff;
+            border: 1px solid #bee3f8;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 8px;
+        }
+        .action-items {
+            background-color: #e6fffa;
+            border: 1px solid #b2f5ea;
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 8px;
+        }
+        ul {
+            padding-right: 20px;
+        }
+        li {
+            margin-bottom: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>مناقشات الأمن السيبراني</h1>
+        
+        <div class="topic">
+            <h2>تقييم المخاطر الأمنية في منظومة مسرور</h2>
+            <div class="date">تاريخ المناقشة: 10 سبتمبر 2025</div>
+            
+            <div class="comment">
+                <span class="participant">أحمد الشمري (مدير أمن المعلومات):</span>
+                <p>بناءً على التقييم الأولي، حددنا عدة نقاط ضعف محتملة في البنية التحتية الحالية. أهمها ضعف في آليات المصادقة متعددة العوامل وغياب التشفير الكامل للبيانات أثناء النقل.</p>
+            </div>
+            
+            <div class="comment">
+                <span class="participant">سارة العتيبي (محلل أمن سيبراني):</span>
+                <p>أؤكد على ما ذكره أحمد، وأضيف أيضاً أن نظام إدارة الثغرات الحالي لا يغطي كافة نقاط الضعف المحتملة، خاصة في واجهات برمجة التطبيقات API.</p>
+            </div>
+            
+            <div class="comment">
+                <span class="participant">فهد الدوسري (مطور أمن):</span>
+                <p>اقترح تطبيق نظام WAF (جدار حماية تطبيقات الويب) مع قواعد مخصصة لحماية واجهات API. كما أقترح تطبيق تقنية OAuth 2.0 مع JWT للمصادقة وإدارة الصلاحيات.</p>
+            </div>
+            
+            <div class="highlight">
+                <h3>النقاط الرئيسية المستخلصة:</h3>
+                <ul>
+                    <li>ضرورة تعزيز آليات المصادقة متعددة العوامل (MFA)</li>
+                    <li>تطبيق تشفير كامل للبيانات أثناء النقل والتخزين</li>
+                    <li>تحديث نظام إدارة الثغرات ليشمل واجهات API</li>
+                    <li>تطبيق جدار حماية متخصص لتطبيقات الويب</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="topic">
+            <h2>استراتيجية الاستجابة للحوادث الأمنية</h2>
+            <div class="date">تاريخ المناقشة: 14 سبتمبر 2025</div>
+            
+            <div class="comment">
+                <span class="participant">خالد المطيري (رئيس فريق الاستجابة للحوادث):</span>
+                <p>نحتاج إلى وضع إجراءات واضحة ومحددة للاستجابة السريعة في حالة وقوع حوادث أمنية. أقترح تقسيم الحوادث إلى مستويات (حرجة، عالية، متوسطة، منخفضة) مع تحديد إجراءات وفترات زمنية للاستجابة لكل مستوى.</p>
+            </div>
+            
+            <div class="comment">
+                <span class="participant">نورة القحطاني (محلل استجابة للحوادث):</span>
+                <p>أتفق مع خالد، وأضيف أهمية وجود قالب للتقارير ووثائق الحوادث. كما يجب تحديد قنوات الاتصال والإبلاغ بشكل واضح لتسريع الاستجابة.</p>
+            </div>
+            
+            <div class="comment">
+                <span class="participant">عبدالله العنزي (مدير المشروع):</span>
+                <p>يجب أيضاً وضع خطة للتعافي من الكوارث تتكامل مع استراتيجية الاستجابة للحوادث. كما أرى ضرورة إجراء تدريبات محاكاة دورية لرفع جاهزية الفريق.</p>
+            </div>
+            
+            <div class="highlight">
+                <h3>النقاط الرئيسية المستخلصة:</h3>
+                <ul>
+                    <li>تصنيف الحوادث الأمنية وتحديد إجراءات الاستجابة لكل فئة</li>
+                    <li>إنشاء قوالب موحدة لتوثيق الحوادث والتقارير</li>
+                    <li>تحديد قنوات الاتصال والإبلاغ بوضوح</li>
+                    <li>تكامل خطة التعافي من الكوارث مع استراتيجية الاستجابة</li>
+                    <li>إجراء تدريبات محاكاة دورية</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="action-items">
+            <h3>الإجراءات المطلوبة:</h3>
+            <ol>
+                <li>تطوير وتوثيق سياسات أمن المعلومات وإجراءاتها (المسؤول: أحمد الشمري، الموعد النهائي: 30 سبتمبر 2025)</li>
+                <li>إعداد خطة تفصيلية لتطبيق المصادقة متعددة العوامل (المسؤول: سارة العتيبي، الموعد النهائي: 25 سبتمبر 2025)</li>
+                <li>اختيار وتهيئة حل لجدار حماية تطبيقات الويب (المسؤول: فهد الدوسري، الموعد النهائي: 5 أكتوبر 2025)</li>
+                <li>إعداد خطة للاستجابة للحوادث الأمنية (المسؤول: خالد المطيري، الموعد النهائي: 28 سبتمبر 2025)</li>
+                <li>جدولة أول تدريب محاكاة للاستجابة للحوادث (المسؤول: نورة القحطاني، الموعد النهائي: 10 أكتوبر 2025)</li>
+            </ol>
+        </div>
+    </div>
+</body>
+</html>

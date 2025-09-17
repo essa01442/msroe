@@ -1,0 +1,27 @@
+id: AG-xxx
+name: ""
+version: "0.1.0"
+status: "Draft"
+owner: ""
+purpose: ""
+in_scope: []
+out_of_scope: []
+capabilities_links: []
+processes_links: []
+contracts_links: []
+security_controls: []
+metrics:
+  kpis: []
+  slis: []
+  slos: []
+interfaces:
+  apis: []
+  events: []
+permissions:
+  roles: []
+  resources: []
+auditing:
+  logs: []
+dependencies:
+  internal: []
+  external: []

@@ -1,27 +1,128 @@
-id: AG-xxx
-name: ""
+id: "AG-001"
+name: "Agent Name"
 version: "0.1.0"
-status: "Draft"
-owner: ""
-purpose: ""
-in_scope: []
-out_of_scope: []
-capabilities_links: []
-processes_links: []
-contracts_links: []
-security_controls: []
+status: "Draft" # Draft | Proposed | Approved | Deprecated
+owner:
+  team: "اسم الفريق"
+  contacts:
+    - type: "slack"
+      value: "#team-channel"
+    - type: "email"
+      value: "team@example.com"
+purpose: >
+  وصف مختصر ودقيق لما يقدّمه الوكيل والقيمة المتوقعة ونطاق العمل وحدوده.
+
+in_scope:
+  - "المهام A..."
+  - "المهام B..."
+out_of_scope:
+  - "مستثنى: ..."
+  - "تحذير: ..."
+capabilities_links:
+  - "https://internal/wiki/capabilities"
+processes_links:
+  - "https://internal/wiki/processes"
+contracts_links:
+  - "https://internal/wiki/contracts"
+security_controls:
+  - id: "SC-01"
+    name: "Least Privilege"
+  - id: "SC-02"
+    name: "Secrets Management"
+
 metrics:
-  kpis: []
-  slis: []
-  slos: []
+  kpis:
+    - name: "رضا المستخدم"
+      target: ">= 90%"
+      owner: "المنتج"
+      frequency: "شهري"
+    - name: "زمن إنجاز المهمة"
+      target: "<= 2s P95"
+      owner: "SRE"
+      frequency: "أسبوعي"
+  slis:
+    - name: "زمن الاستجابة P95"
+      measure: "ms"
+      threshold: 500
+      window: "5m"
+    - name: "معدل الأخطاء"
+      measure: "%"
+      threshold: 1.0
+      window: "5m"
+  slos:
+    - objective: "توفر الخدمة"
+      target: "99.9%"
+      error_budget_policy: "تجميد تغييرات عند استهلاك >50% خلال 30 يومًا"
+
 interfaces:
-  apis: []
-  events: []
+  apis:
+    - name: "Inference"
+      method: "POST"
+      path: "/v1/infer"
+      auth: "OAuth2"
+      rate_limit_rps: 100
+      timeout_ms: 1000
+      idempotency: true
+      owner: "المنصّة"
+  events:
+    - name: "TaskCompleted"
+      topic: "agents.task.completed"
+      schema_ref: "https://schemas.internal/agents/task_completed.json"
+      producer: "Agent"
+      consumers: ["Analytics", "Billing"]
+      retention_days: 7
+      dr_strategy: "multi-region topic with mirroring"
+
 permissions:
-  roles: []
-  resources: []
+  roles:
+    - name: "agent-service"
+      description: "تشغيل الوكيل والوصول إلى الموارد الضرورية"
+  resources:
+    - resource: "db.main"
+      actions: ["read", "write"]
+    - resource: "s3://bucket"
+      actions: ["read"]
+  data_access:
+    - dataset: "customers"
+      sensitivity: "PII"
+      retention: "90d"
+
 auditing:
-  logs: []
+  logs:
+    - source: "service"
+      retention_days: 30
+      pii: false
+  traces:
+    enabled: true
+    sampling_rate: 0.1
+
+alerts:
+  - name: "ارتفاع زمن الاستجابة"
+    condition: "P95 > 500ms لمدة 5m"
+    severity: "SEV-2"
+    runbook: "مسرور/تفكيك اولي/الوكلاء/قوالب/10-تشغيل-ودلائل-المهام.md#5-المراقبة-والتنبيهات"
+    owner: "SRE"
+
 dependencies:
-  internal: []
-  external: []
+  internal:
+    - service: "identity-sso"
+      owner: "المنصّة"
+      interface: "OIDC"
+      sla: "99.95%"
+      criticality: "حرجة"
+  external:
+    - vendor: "Vendor-ML"
+      contact: "support@vendor.com"
+      contract_ref: "عقد-2025-ML-01"
+      sla: "99.9%"
+
+runbooks:
+  - name: "نشر إصدار"
+    doc: "مسرور/تفكيك اولي/الوكلاء/قوالب/10-تشغيل-ودلائل-المهام.md#3-إجراءات-تشغيل-قياسية-sop"
+
+raci:
+  - activity: "تشغيل يومي"
+    responsible: ["SRE"]
+    accountable: ["رئيس المنصّة"]
+    consulted: ["الأمن"]
+    informed: ["المنتج"]

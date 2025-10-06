@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>وثيقة مواصفات منظومة «مسرور» — النسخة التنفيذية</title>
+<style>
+  body { font-family: "Tajawal", "Segoe UI", Arial, sans-serif; line-height: 1.7; color: #0f172a; background: #ffffff; margin: 0; }
+  .container { max-width: 1120px; margin: 0 auto; padding: 24px 20px 80px; }
+  h1,h2,h3,h4 { color: #0b1324; margin: 18px 0 10px; }
+  h1 { font-size: 30px; }
+  h2 { font-size: 24px; border-bottom: 1px solid #e2e8f0; padding-bottom: 6px; }
+  h3 { font-size: 20px; }
+  h4 { font-size: 18px; }
+  p { margin: 8px 0; }
+  ul { margin: 6px 0 12px 0; padding-right: 20px; }
+  li { margin: 4px 0; }
+  code, .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; background: #f8fafc; padding: 1px 4px; border-radius: 4px; }
+  .meta { font-size: 13px; color: #475569; }
+  .badge { display: inline-block; background: #f1f5f9; color: #0f172a; padding: 2px 8px; border-radius: 10px; font-size: 12px; margin-left: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 8px 0 14px; }
+  th, td { border: 1px solid #e2e8f0; padding: 8px 10px; text-align: right; vertical-align: top; }
+  th { background: #f8fafc; }
+  .small { font-size: 13px; color: #334155; }
+  .note { background: #f8fafc; border: 1px solid #e2e8f0; padding: 10px 12px; border-radius: 8px; }
+  .pill { background: #e2e8f0; border-radius: 999px; padding: 0 8px; font-size: 12px; }
+  .grid { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+  .section { margin-top: 24px; }
+  .toc a { color: #0ea5e9; text-decoration: none; }
+  .toc a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+  <div class="container">
+    <h1>وثيقة مواصفات منظومة «مسرور» — النسخة التنفيذية</h1>
+    <p class="meta">الإصدار: v1.0 • التاريخ: 2025-10-06 22:37 • المنطقة: Asia/Riyadh</p>
+    <p class="note">
+      هذه الوثيقة تُجسّد الرؤية التشغيلية لمنظومة «مسرور» بناءً على النقاشات الأخيرة والملفات المرفقة
+      (خطة مسرور، خطة محسّنة، البوابة الأمنية، نظام إدارة الذاكرة). تم توحيدها في مواصفة واحدة دقيقة وقابلة للتنفيذ.
+    </p>
+
+    <div class="section toc">
+      <h2>فهرس</h2>
+      <ol>
+        <li><a href="#intro">المقدمة والأهداف</a></li>
+        <li><a href="#scope">النطاق والافتراضات المعتمدة</a></li>
+        <li><a href="#arch">البنية العامة للمنظومة</a></li>
+        <li><a href="#access">الوصول والتشغيل المحلي</a></li>
+        <li><a href="#agents">الوكلاء ورؤساء القطاعات (18)</a></li>
+        <li><a href="#memory">هندسة الذاكرة ثلاثية الطبقات</a></li>
+        <li><a href="#db">قواعد البيانات والفهارس</a></li>
+        <li><a href="#telegram">قناة تيليغرام وقائمة السماح</a></li>
+        <li><a href="#cost">إدارة التكلفة والحد الشهري</a></li>
+        <li><a href="#backup">النسخ الاحتياطي القابل للتشغيل فورًا</a></li>
+        <li><a href="#ops">تشغيل، مراقبة، طوارئ، وإجراءات الاستعادة</a></li>
+        <li><a href="#roadmap">خارطة طريق التنفيذ المرحلي</a></li>
+        <li><a href="#appendix">ملاحق: تعريفات الحقول والجداول</a></li>
+      </ol>
+    </div>
+
+    <div id="intro" class="section">
+      <h2>1) المقدمة والأهداف</h2>
+      <ul>
+        <li>تشغيل محلي بالكامل على كمبيوتر مكتبي مُحوّل إلى خادم.</li>
+        <li>عدم إتاحة روابط خارجية للإدارة. الإدارة من داخل الشبكة المحلية فقط.</li>
+        <li>قناة تيليغرام كممر تفاعلي للمستخدمين الموثوقين عبر <span class="mono">UID Allowlist</span>.</li>
+        <li>18 رئيس قطاع، لكل منهم شخصية مستقلة على OpenAI وذاكرة ثلاثية الطبقات.</li>
+        <li>وكيل ذاكرة «أعمى» مسؤول عن التخزين، الفهرسة، وترحيل الطبقات.</li>
+        <li>«مسرور» يمتلك <span class="mono">Index of Indexes</span> ملخّصًا لكل المحادثات عبر جميع الرؤساء.</li>
+        <li>تسجيل كامل لكل التفاعلات وعدم فقدان السجلات افتراضيًا.</li>
+      </ul>
+    </div>
+
+    <div id="scope" class="section">
+      <h2>2) النطاق والافتراضات المعتمدة</h2>
+      <ul>
+        <li>الأمن المتقدم مؤجل عمدًا. الوصول الإداري محلي فقط. لا سطح خارجي.</li>
+        <li>جودة، تنسيق، وسرعة البيانات أولوية. البساطة التشغيلية مُقدّمة على التعقيد.</li>
+        <li>ميزانية استخدام OpenAI: <b>5$ شهريًا لكل رئيس قطاع</b> كبداية.</li>
+        <li>طبقة الذاكرة الباردة غير محدودة الحجم. تُنسخ يدويًا دوريًا إلى وسيط خارجي.</li>
+        <li>التسميات: <span class="mono">agent_id</span> يطابق تخصص الرئيس. <span class="mono">conv_id</span> بصيغة UUID.</li>
+      </ul>
+    </div>
+
+    <div id="arch" class="section">
+      <h2>3) البنية العامة للمنظومة</h2>
+      <h3>3.1 المكونات</h3>
+      <ul>
+        <li><b>Masroor-Orchestrator</b>: منسّق الطلبات، إدارة الشخصيات، والتوجيه.</li>
+        <li><b>OpenAI Client</b>: عميل واحد مُدار مركزيًا، يُستخدم من جميع الرؤساء بشخصيات مستقلة.</li>
+        <li><b>Memory Agent (أعمى)</b>: تخزين، فهرسة، ترحيل، وإرجاع النصوص عند الطلب.</li>
+        <li><b>PostgreSQL 16</b> للفورية والبحث، مع <b>pgvector</b> و<b>FTS</b>.</li>
+        <li><b>Parquet + DuckDB</b> لطبقة الذاكرة الباردة التحليلية.</li>
+        <li><b>Reverse Proxy محلي</b> لعزل نقاط الدخول وإدارة المسارات.</li>
+        <li><b>Telegram Gateway</b> للتفاعل مع المستخدمين عبر UID Allowlist.</li>
+      </ul>
+      <h3>3.2 تدفق عالي المستوى</h3>
+      <ol>
+        <li>طلب من تيليغرام من UID مسموح يُمرَّر إلى Masroor-Orchestrator.</li>
+        <li>الأوركستراتور يقرر: هل يحتاج ذاكرة أم إجابة مباشرة من شخصية الوكيل؟</li>
+        <li>إن احتاج ذاكرة: استعلام خفيف من <span class="mono">Index of Indexes</span> ثم جلب التفاصيل من Memory Agent.</li>
+        <li>إجابة الوكيل تُحفظ مع ملخص مختصر لتحديث الفهارس.</li>
+      </ol>
+    </div>
+
+    <div id="access" class="section">
+      <h2>4) الوصول والتشغيل المحلي</h2>
+      <ul>
+        <li>تثبيت IP الراوتر أو استخدام برامج تثبيت IP لتسهيل الوصول الداخلي.</li>
+        <li>الإدارة من الخادم نفسه فقط. لا لوحة إدارة خارج الشبكة.</li>
+        <li>البروكسي العكسي المحلي يحدد المسارات المسموحة ويغلق غيرها.</li>
+        <li>لا أي فتح لمنفذ خارجي للإدارة. تيليغرام فقط للقناة التفاعلية.</li>
+      </ul>
+    </div>
+
+    <div id="agents" class="section">
+      <h2>5) الوكلاء ورؤساء القطاعات (18)</h2>
+      <p>كل رئيس قطاع يمتلك: شخصية مستقلة، حدودًا وصلاحيات، ذاكرة ثلاثية، وتتبع تكلفة.</p>
+      <table>
+        <thead>
+          <tr>
+            <th>الرقم</th><th>اسم الرئيس/القطاع</th><th>الهدف</th><th>المدخلات</th><th>المخرجات</th><th>الحدود والصلاحيات</th><th>KPIs</th><th>سقف التكلفة</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>1</td><td>الاستخبارات والسوق</td><td>رصد اتجاهات وفرص.</td><td>أخبار، كلمات مفتاحية.</td><td>تقارير، تنبيهات.</td><td>قراءة فقط للذاكرة العامة.</td><td>دقة التوقع. سرعة الرصد.</td><td>5$</td></tr>
+          <tr><td>2</td><td>اكتشاف المنتجات</td><td>قوائم منتجات رابحة.</td><td>كلمات، منافسين.</td><td>قائمة مرتبة بالأسباب.</td><td>لا نشر مباشر.</td><td>نسبة التحويل.</td><td>5$</td></tr>
+          <tr><td>3</td><td>التوريد واللوجستيات</td><td>عروض وأسعار وشحن.</td><td>موردون، حدود جمركية.</td><td>مصفوفات تكلفة وزمن.</td><td>لا تعامل مالي مباشر.</td><td>زمن التوريد. تكلفة.</td><td>5$</td></tr>
+          <tr><td>4</td><td>الحاسبة والتسعير</td><td>حساب هوامش ورقم التعادل.</td><td>تكاليف، سوق.</td><td>تسعير موصى به.</td><td>لا نشر تلقائي.</td><td>هوامش منطقية.</td><td>5$</td></tr>
+          <tr><td>5</td><td>المتاجر والمنصات</td><td>إعداد وإدارة المتاجر.</td><td>كتالوج، سياسات.</td><td>قوائم جاهزة للنشر.</td><td>لا نشر دون موافقة.</td><td>جودة القوائم.</td><td>5$</td></tr>
+          <tr><td>6</td><td>التسويق والنمو</td><td>حملات وقنوات.</td><td>شرائح، أهداف.</td><td>خطة ونصوص إعلانية.</td><td>لا شراء إعلانات.</td><td>CTR, CAC.</td><td>5$</td></tr>
+          <tr><td>7</td><td>المحتوى والإنتاج</td><td>نصوص وصور وفيديو.</td><td>إرشادات العلامة.</td><td>حزم محتوى.</td><td>لا نشر عام.</td><td>الاتساق والجودة.</td><td>5$</td></tr>
+          <tr><td>8</td><td>السمعة وخدمة العملاء</td><td>رصد المراجعات والردود.</td><td>قنوات تواصل.</td><td>قوالب رد وتقارير.</td><td>لا إرسال مباشر.</td><td>زمن الاستجابة.</td><td>5$</td></tr>
+          <tr><td>9</td><td>القانوني والامتثال</td><td>تحقق سياسات المبيعات.</td><td>لوائح، دول.</td><td>حالة السماح/المنع.</td><td>استشاري فقط.</td><td>دقة الاستشهاد.</td><td>5$</td></tr>
+          <tr><td>10</td><td>المالي والدفع</td><td>متابعة مصروفات/إيرادات.</td><td>أسعار، رسوم.</td><td>لوحة أرقام مبسطة.</td><td>لا تحويلات.</td><td>دقة الحسابات.</td><td>5$</td></tr>
+          <tr><td>11</td><td>الاتصالات والبنية</td><td>إيميلات، أرقام، قنوات.</td><td>مزودون، حدود.</td><td>خريطة قنوات.</td><td>تهيئة فقط.</td><td>زمن الجاهزية.</td><td>5$</td></tr>
+          <tr><td>12</td><td>صحة النظام</td><td>مراقبة وتنبيهات.</td><td>مقاييس الموارد.</td><td>تقارير صحة.</td><td>قراءة فقط.</td><td>MTTR, Uptime.</td><td>5$</td></tr>
+          <tr><td>13</td><td>الذكاء الاصطناعي والوكلاء</td><td>تصميم وتحسين تدفقات.</td><td>سياسات، نماذج.</td><td>مقترحات تحسين.</td><td>استشارة تقنية.</td><td>انخفاض التكلفة.</td><td>5$</td></tr>
+          <tr><td>14</td><td>البيانات والتحليلات</td><td>لوحات وتحليلات.</td><td>سجلات وفهارس.</td><td>مؤشرات وإضاءات.</td><td>قراءة فقط.</td><td>صحة البيانات.</td><td>5$</td></tr>
+          <tr><td>15</td><td>الجودة والاختبار</td><td>سيناريوهات قبول.</td><td>خطط تشغيل.</td><td>قوائم تحقق.</td><td>لا نشر.</td><td>تغطية اختبار.</td><td>5$</td></tr>
+          <tr><td>16</td><td>الموردون والشراكات</td><td>إدارة علاقات.</td><td>عقود، عروض.</td><td>مصفوفة مقارنة.</td><td>لا توقيع.</td><td>شروط أفضل.</td><td>5$</td></tr>
+          <tr><td>17</td><td>المخزون والطلبيات</td><td>تتبع مستويات.</td><td>حركة مبيعات.</td><td>تنبيهات إعادة طلب.</td><td>قراءة فقط.</td><td>نقص صفر.</td><td>5$</td></tr>
+          <tr><td>18</td><td>التقاریر والتنفيذي</td><td>ملخصات لصانع القرار.</td><td>مخرجات الكل.</td><td>تقارير أسبوعية/شهرية.</td><td>لا تغييرات.</td><td>وضوح القرار.</td><td>5$</td></tr>
+        </tbody>
+      </table>
+      <p class="small">ملاحظة: جميع الرؤساء يعملون عبر OpenAI بشخصيات مستقلة، مع عزل جلسات تام، ومشاركة ملخصات فقط عبر «مسرور».</p>
+    </div>
+
+    <div id="memory" class="section">
+      <h2>6) هندسة الذاكرة ثلاثية الطبقات</h2>
+      <h3>6.1 الأهداف</h3>
+      <ul>
+        <li>استجابة سريعة للحديث والاستخدام المتكرر.</li>
+        <li>كلفة تخزين منخفضة عبر ترحيل المنخفض الأهمية للباردة.</li>
+        <li>حفظ كل شيء وعدم فقدان أي سجل.</li>
+      </ul>
+      <h3>6.2 حدود الطبقات لكل رئيس</h3>
+      <ul>
+        <li><b>ساخنة:</b> أهم <b>30,000</b> محادثة.</li>
+        <li><b>دافئة:</b> <b>70,000</b> محادثة تالية.</li>
+        <li><b>باردة:</b> غير محدودة. تُخزن في ملفات Parquet مع Manifest.</li>
+      </ul>
+      <h3>6.3 معيار الأهمية والترحيل</h3>
+      <ul>
+        <li>مقياس أهمية موحّد: يعتمد على حداثة، تكرار الاستدعاء، وتعليمك اليدوي.</li>
+        <li>عند تجاوز حد الطبقة: الأقل أهمية يهبط للطبقة التالية.</li>
+        <li>تحديث الفهارس مباشرة بعد كل ترحيل.</li>
+      </ul>
+      <h3>6.4 فهرس كل وكيل</h3>
+      <p>جدول فهرسي سريع للساخنة والدافئة يضم:</p>
+      <ul>
+        <li><span class="mono">conv_id</span>, <span class="mono">title</span>, <span class="mono">ts_start</span>, <span class="mono">ts_last</span>, <span class="mono">summary_256</span>, <span class="mono">importance</span>, <span class="mono">layer</span></li>
+        <li>مؤشر نصي و/أو دلالي عبر pgvector.</li>
+      </ul>
+      <h3>6.5 فهرس الفهارس الخاص بمسرور</h3>
+      <ul>
+        <li>سجل موجز لكل محادثة: <span class="mono">agent_id, conv_id, ts_last, summary_64, route_hint</span>.</li>
+        <li>لا نص كامل هنا. عند الحاجة، يطلب النص من وكيل الذاكرة.</li>
+      </ul>
+    </div>
+
+    <div id="db" class="section">
+      <h2>7) قواعد البيانات والفهارس</h2>
+      <h3>7.1 النظام المعتمد</h3>
+      <ul>
+        <li><b>PostgreSQL 16</b> كأساس واحد للفورية والبحث.</li>
+        <li>إضافة <b>pgvector</b> للبحث الدلالي، و<b>Full-Text Search</b> للنصي.</li>
+        <li>تقسيم جداول حسب <span class="mono">layer → agent_id → شهر ts_last</span>.</li>
+      </ul>
+      <h3>7.2 الجداول الأساسية (مستوى الحقول)</h3>
+      <table>
+        <thead><tr><th>الجدول</th><th>الحقول الأساسية</th><th>ملاحظات</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>conversations</td>
+            <td class="small">
+              agent_id, conv_id (UUID), title, ts_start, ts_last, importance (int), layer (enum: hot|warm|cold), tsv (FTS), embedding (vector)
+            </td>
+            <td>مقسم partitions. فهارس على (agent_id, layer, importance DESC, ts_last DESC).</td>
+          </tr>
+          <tr>
+            <td>messages</td>
+            <td class="small">conv_id, msg_id, ts, role (user|assistant|system), content_hash, content_ptr, tokens, cost_cents</td>
+            <td>لا تخزين نص طويل مباشرة في الساخنة إن زاد الحجم؛ يُشار إلى ملف خارجي عند الحاجة.</td>
+          </tr>
+          <tr>
+            <td>agent_index</td>
+            <td class="small">agent_id, conv_id, ts_last, summary_256, importance, layer</td>
+            <td>فهرس سريع لكل وكيل.</td>
+          </tr>
+          <tr>
+            <td>masroor_index_of_indexes</td>
+            <td class="small">agent_id, conv_id, ts_last, summary_64, route_hint</td>
+            <td>لا نص كامل. مؤشرات فقط.</td>
+          </tr>
+          <tr>
+            <td>billing_usage</td>
+            <td class="small">agent_id, period, calls, tokens_in, tokens_out, cost_usd</td>
+            <td>تتبع حد 5$ شهريًا لكل رئيس.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>7.3 طبقة الباردة (Parquet + Manifest)</h3>
+      <ul>
+        <li>مسار: <span class="mono">/cold/&lt;agent_name&gt;/YYYY/MM/</span></li>
+        <li>ملف Manifest يضم: الملفات، المدى الزمني، عدد السجلات، checksum.</li>
+        <li>قراءة تحليلية عبر DuckDB محليًا فقط.</li>
+      </ul>
+    </div>
+
+    <div id="telegram" class="section">
+      <h2>8) قناة تيليغرام وقائمة السماح</h2>
+      <ul>
+        <li>UIDs محفوظة خارج المنظومة ولكن على نفس الخادم.</li>
+        <li>قراءة فقط من «مسرور». لا تعديل تلقائي.</li>
+        <li>أي UID غير مسموح: لا تفاعل علني. تسجيل داخلي فقط.</li>
+      </ul>
+    </div>
+
+    <div id="cost" class="section">
+      <h2>9) إدارة التكلفة والحد الشهري</h2>
+      <ul>
+        <li>سقف أولي: <b>5$ شهريًا لكل رئيس قطاع</b>.</li>
+        <li>آلية رقابة: إيقاف الطلبات الطويلة عند الاقتراب من السقف واستبدالها بملخصات.</li>
+        <li>سجل <span class="mono">billing_usage</span> لدقة المتابعة.</li>
+      </ul>
+    </div>
+
+    <div id="backup" class="section">
+      <h2>10) النسخ الاحتياطي القابل للتشغيل فورًا</h2>
+      <h3>10.1 الهدف</h3>
+      <p>إذا تعطل الكمبيوتر، ننقل حزمة واحدة وتعمل فورًا على كمبيوتر بديل.</p>
+      <h3>10.2 مكونات الحزمة</h3>
+      <ul>
+        <li>لقطة كاملة لقاعدة PostgreSQL (ساخنة/دافئة والفهارس).</li>
+        <li>مجلدات Parquet + Manifest للباردة.</li>
+        <li>إعدادات Masroor-Orchestrator (بدون أسرار ضمن المستودع).</li>
+        <li>ملفات تعريف الشخصيات لكل الرؤساء (system_profile, gen_params).</li>
+      </ul>
+      <h3>10.3 اختبار الاستعادة</h3>
+      <ul>
+        <li>استعادة شهرية على جهاز محلي بديل.</li>
+        <li>التحقق من: تشغيل الجلسات، استدعاء الذاكرة، وإعادة بناء المسارات إن لزم.</li>
+      </ul>
+    </div>
+
+    <div id="ops" class="section">
+      <h2>11) تشغيل، مراقبة، طوارئ، وإجراءات الاستعادة</h2>
+      <h3>11.1 تشغيل أساسي</h3>
+      <ul>
+        <li>بدء Postgres، Masroor-Orchestrator، Memory Agent، Reverse Proxy، Telegram Gateway.</li>
+        <li>اختبار طلب تيليغرام من UID مسموح والتحقق من رد سريع.</li>
+      </ul>
+      <h3>11.2 مراقبة خفيفة</h3>
+      <ul>
+        <li>مقاييس الموارد: CPU/GPU، RAM، IO لكل مكوّن.</li>
+        <li>مؤشرات الذاكرة: امتلاء الساخنة والدافئة، زمن الاستجابة، معدل الترحيل.</li>
+      </ul>
+      <h3>11.3 طوارئ</h3>
+      <ul>
+        <li>Kill-switch محلي لإيقاف تفاعل تيليغرام مؤقتًا.</li>
+        <li>استرجاع UID من نسخة احتياطية عند حذف خاطئ.</li>
+      </ul>
+      <h3>11.4 استعادة</h3>
+      <ul>
+        <li>استعادة لقطة DB + ربط مجلدات Parquet.</li>
+        <li>اختبار استعلام عبر Masroor Index-of-Indexes ثم جلب تفاصيل من Memory Agent.</li>
+      </ul>
+    </div>
+
+    <div id="roadmap" class="section">
+      <h2>12) خارطة طريق التنفيذ المرحلي</h2>
+      <ol>
+        <li>اعتماد Postgres+pgvector وتهيئة الجداول الأساسية.</li>
+        <li>إعداد Memory Agent «أعمى» وهيكلة الفهارس.</li>
+        <li>تركيب Masroor-Orchestrator وربطه بعميل OpenAI.</li>
+        <li>تفعيل Telegram Gateway وربطه بالأوركستراتور.</li>
+        <li>تطبيق سياسة الترحيل والحدود 30k/70k وتحديث الفهارس.</li>
+        <li>تفعيل تتبع التكلفة وإيقاف الطلبات الطويلة عند الاقتراب من السقف.</li>
+        <li>تهيئة حزمة النسخ الاحتياطي القابلة للتشغيل واختبار الاستعادة.</li>
+      </ol>
+    </div>
+
+    <div id="appendix" class="section">
+      <h2>13) ملاحق: تعريفات الحقول والجداول</h2>
+      <h3>13.1 أنواع معرفات</h3>
+      <ul>
+        <li><span class="mono">agent_id</span>: اسم التخصص (سلسلة فريدة).</li>
+        <li><span class="mono">conv_id</span>: UUID لكل محادثة.</li>
+      </ul>
+      <h3>13.2 قيم مشتركة</h3>
+      <ul>
+        <li><span class="mono">layer</span>: hot | warm | cold</li>
+        <li><span class="mono">importance</span>: عدد صحيح، أكبر يعني أهم.</li>
+      </ul>
+      <h3>13.3 حقول محادثة قياسية</h3>
+      <ul>
+        <li><span class="mono">title</span>: عنوان موجز.</li>
+        <li><span class="mono">ts_start, ts_last</span>: طوابع وقت ISO.</li>
+        <li><span class="mono">summary_64/256</span>: ملخصات قصيرة/متوسطة.</li>
+        <li><span class="mono">tsv</span>: فهرس نصي.</li>
+        <li><span class="mono">embedding</span>: متجه pgvector.</li>
+      </ul>
+      <h3>13.4 تتبع التكلفة</h3>
+      <ul>
+        <li><span class="mono">billing_usage</span>: agent_id, period, calls, tokens_in, tokens_out, cost_usd</li>
+      </ul>
+    </div>
+
+    <p class="meta">تم إعداد هذه الوثيقة وفق متطلباتك: تشغيل محلي، وصول داخلي، تيليغرام بآلية UID، وكلاء OpenAI بشخصيات مستقلة، ذاكرة ثلاثية الطبقات، وفهرس فهارس لدى «مسرور».</p>
+  </div>
+</body>
+</html>

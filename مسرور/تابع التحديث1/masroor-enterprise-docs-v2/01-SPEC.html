@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>وثيقة مواصفات «مسرور» — نسخة مؤسسية مفصلة</title>
+<style>
+  :root { --ink:#0f172a; --muted:#475569; --line:#e2e8f0; --bg:#ffffff; --soft:#f8fafc; }
+  html,body { background:var(--bg); color:var(--ink); font-family:"Tajawal","Segoe UI",Arial,sans-serif; line-height:1.75; margin:0; }
+  .container { max-width: 1120px; margin: 0 auto; padding: 28px 18px 80px; }
+  h1 { font-size:32px; margin: 8px 0 10px; }
+  h2 { font-size:24px; border-bottom:1px solid var(--line); padding-bottom:6px; margin-top:28px; }
+  h3 { font-size:20px; margin-top:18px; }
+  h4 { font-size:18px; margin-top:14px; }
+  p,li { font-size:16px; }
+  .meta { color:var(--muted); font-size:13px; }
+  .note { background:var(--soft); border:1px solid var(--line); padding:12px 14px; border-radius:8px; }
+  .toc a { color:#0ea5e9; text-decoration:none; }
+  .toc a:hover { text-decoration:underline; }
+  code,.mono { font-family:ui-monospace,Consolas,Menlo,monospace; background:var(--soft); padding:1px 4px; border-radius:4px; }
+  table { width:100%; border-collapse:collapse; margin:10px 0 16px; }
+  th,td { border:1px solid var(--line); padding:8px 10px; text-align:right; vertical-align:top; }
+  th { background:var(--soft); }
+  .grid { display:grid; gap:10px; grid-template-columns: repeat(auto-fit,minmax(260px,1fr)); }
+  .kbd { border:1px solid var(--line); border-bottom-width:3px; border-radius:6px; padding:0 6px; font-family:ui-monospace,Consolas,Menlo,monospace; }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>وثيقة مواصفات «مسرور» — نسخة مؤسسية مفصلة</h1>
+  <p class="meta">الإصدار v2 • 2025-10-07 01:51 • هذه الوثيقة تغطي: المعمارية، الذاكرة، الأمن، التكامل، الإخفاقات، الاختبارات، الأداء.</p>
+  <p class="note">هذه النسخة تعالج ملاحظات التقارير المستقلة: تعميق التكامل بين الوكلاء، إدراج أمان وخصوصية مدمجين، إضافة خطط الإخفاقات والاختبارات المركزية، ورفع جودة التوثيق إلى مستوى مؤسسي.</p>
+
+  <h2 id="toc">فهرس</h2>
+  <ol class="toc">
+    <li><a href="#intro">المقدمة والأهداف</a></li>
+    <li><a href="#arch">المعمارية العامة</a></li>
+    <li><a href="#agents">الوكلاء الثمانية عشر</a></li>
+    <li><a href="#memory">هندسة الذاكرة والسياسات</a></li>
+    <li><a href="#security">الأمن والخصوصية</a></li>
+    <li><a href="#integration">التكامل وبروتوكول الاتصال</a></li>
+    <li><a href="#failover">الإخفاقات والاسترداد</a></li>
+    <li><a href="#testing">الاختبارات والجودة</a></li>
+    <li><a href="#performance">الأداء والمقاييس المركزية</a></li>
+    <li><a href="#roadmap">خارطة الطريق</a></li>
+    <li><a href="#glossary">مصطلحات</a></li>
+  </ol>
+
+  <h2 id="intro">1) المقدمة والأهداف</h2>
+  <ul>
+    <li>خدمة محلية بالكامل على خادم مكتبي، وصول إداري داخلي فقط.</li>
+    <li>تفاعل المستخدمين عبر Telegram باستخدام <span class="mono">UID Allowlist</span>.</li>
+    <li>18 وكيلًا متخصصًا يعملون جميعًا عبر عميل OpenAI واحد بشخصيات مستقلة.</li>
+    <li>ذاكرة ثلاثية الطبقات لكل وكيل، ووكيل ذاكرة «أعمى»، وفهرس فهارس لدى «مسرور».</li>
+  </ul>
+
+  <h2 id="arch">2) المعمارية العامة</h2>
+  <h3>2.1 المكونات الأساسية</h3>
+  <div class="grid">
+    <div class="note"><b>Masroor-Orchestrator</b><br>توجيه الطلبات، إدارة الشخصيات، ضبط التكاليف، دمج المخرجات.</div>
+    <div class="note"><b>OpenAI Client</b><br>عميل واحد مُدار مركزيًا؛ 18 ملف تعريف شخصية.</div>
+    <div class="note"><b>Memory Agent (أعمى)</b><br>إدارة التخزين، الفهرسة، الترحيل بين الطبقات، الإرجاع حسب المؤشرات.</div>
+    <div class="note"><b>Telegram Gateway</b><br>قناة تفاعل مقيدة بـ UID. لا تفاعل مع غير المصرّح.</div>
+    <div class="note"><b>Data Core</b><br>PostgreSQL 16 + pgvector للساخنة/الدافئة، Parquet + DuckDB للباردة.</div>
+  </div>
+
+  <h3>2.2 تدفق الطلب</h3>
+  <ol>
+    <li>وصول طلب من UID مسموح عبر Telegram.</li>
+    <li>الأوركستراتور يحدد الوكيل الأنسب ويقرأ ملخصًا من فهرس الوكيل.</li>
+    <li>عند الحاجة للتفاصيل، يطلب من Memory Agent نصًا كاملاً حسب <span class="mono">conv_id</span>.</li>
+    <li>يُنتج الوكيل استجابة مضبوطة بالميزانية، وتُحدّث الفهارس والملخصات.</li>
+  </ol>
+
+  <h2 id="agents">3) الوكلاء الثمانية عشر</h2>
+  <p>لكل وكيل: شخصية، حدود وصلاحيات، ذاكرة، KPIs، SOP للطوارئ، تكاملات رئيسية.</p>
+  <table>
+    <thead><tr><th>الوكيل</th><th>الهدف</th><th>تكاملات رئيسية</th><th>حدود وصلاحيات</th></tr></thead>
+    <tbody>
+      <tr><td>التسويق والنمو</td><td>خطط حملات فعّالة.</td><td>التقاریر والتنفيذي، المحتوى، المتاجر.</td><td>إنتاج توصيات، دون شراء إعلانات.</td></tr>
+      <tr><td>التوريد واللوجستيات</td><td>تخفيض زمن/تكلفة التوريد.</td><td>المخزون، المالي.</td><td>لا تعاملات مالية مباشرة.</td></tr>
+      <tr><td>البيانات والتحليلات</td><td>لوحات مؤشرات دقيقة.</td><td>الجميع.</td><td>قراءة فقط للبيانات التشغيلية.</td></tr>
+      <!-- ... قائمة كاملة داخل ملفات agents/ -->
+    </tbody>
+  </table>
+
+  <h2 id="memory">4) هندسة الذاكرة والسياسات</h2>
+  <h3>4.1 طبقات الذاكرة</h3>
+  <ul>
+    <li><b>ساخنة:</b> أهم 30,000 محادثة للوكيل.</li>
+    <li><b>دافئة:</b> 70,000 محادثة تالية.</li>
+    <li><b>باردة:</b> غير محدودة (Parquet + Manifest).</li>
+  </ul>
+  <h3>4.2 معيار الأهمية</h3>
+  <ul>
+    <li>درجة مركبة: حداثة + تكرار + إشارة يدوية.</li>
+    <li>هبوط الأقل أهمية عند تجاوز الحد.</li>
+  </ul>
+  <h3>4.3 فهارس</h3>
+  <ul>
+    <li>فهرس الوكيل: <span class="mono">conv_id, title, ts_last, importance, layer, summary_256, tsv, embedding</span>.</li>
+    <li>فهرس «مسرور»: <span class="mono">agent_id, conv_id, ts_last, summary_64, route_hint</span>.</li>
+  </ul>
+
+  <h2 id="security">5) الأمن والخصوصية</h2>
+  <h3>5.1 مبادئ</h3>
+  <ul>
+    <li>وصول إداري محلي فقط. لا منافذ خارجية للإدارة.</li>
+    <li>قناة Telegram مقيدة بقائمة UID خارجية قابلة للقراءة فقط.</li>
+    <li>بيانات حساسة تُخزن مشفرة على القرص، وحقول أسرار خارج المستودع.</li>
+  </ul>
+  <h3>5.2 ضوابط لكل وكيل</h3>
+  <ul>
+    <li>صلاحيات قراءة/كتابة في حدوده فقط.</li>
+    <li>سجلات Append-only لعمليات التعديل.</li>
+    <li>إنذارات فورية عند تجاوز استهلاك أو محاولات وصول غير مصرح بها.</li>
+  </ul>
+
+  <h2 id="integration">6) التكامل وبروتوكول الاتصال</h2>
+  <h3>6.1 مصفوفة التفاعل المختصرة</h3>
+  <table>
+    <thead><tr><th>من</th><th>إلى</th><th>السبب</th><th>الحمولة</th></tr></thead>
+    <tbody>
+      <tr><td>التسويق</td><td>التقاریر والتنفيذي</td><td>ملخص حملات</td><td>JSON: plan_id, summary_64, KPIs</td></tr>
+      <tr><td>التوريد</td><td>المخزون</td><td>توليد أمر شراء</td><td>JSON: sku, qty, eta</td></tr>
+      <tr><td>المحتوى</td><td>المتاجر</td><td>نشر قوائم</td><td>JSON: listing, assets_ptr</td></tr>
+    </tbody>
+  </table>
+  <h3>6.2 بروتوكول موحد</h3>
+  <ul>
+    <li>تنسيق الحمولة: <span class="mono">application/json</span> مع حقول إلزامية.</li>
+    <li>طوابع زمنية ISO، ومعرفات <span class="mono">agent_id, conv_id</span>.</li>
+    <li>مجالات ثقة: <span class="mono">confidence ∈ [0..1]</span> وسبب مختصر.</li>
+  </ul>
+
+  <h2 id="failover">7) الإخفاقات والاسترداد</h2>
+  <h3>7.1 سيناريوهات</h3>
+  <ul>
+    <li>فشل وكيل: تحويل تلقائي لوكيل احتياطي أو وضع الملخصات.</li>
+    <li>تجاوز تكلفة: إيقاف المكالمات الطويلة وتفعيل التلخيص.</li>
+    <li>تعطل الخادم: تشغيل نسخة باكاب قابلة للعمل فورًا.</li>
+  </ul>
+  <h3>7.2 باكاب وتشغيل فوري</h3>
+  <ul>
+    <li>لقطات Postgres + WAL، ونسخ Parquet + Manifest.</li>
+    <li>اختبار استعادة شهري على جهاز بديل.</li>
+  </ul>
+
+  <h2 id="testing">8) الاختبارات والجودة</h2>
+  <ul>
+    <li>اختبارات وحدات لكل وكيل على منطق الإدخال/الإخراج.</li>
+    <li>اختبارات تكامل بين الوكلاء وفق المصفوفة.</li>
+    <li>اختبارات أمان وخصوصية، وتحمل/أداء.</li>
+  </ul>
+
+  <h2 id="performance">9) الأداء والمقاييس المركزية</h2>
+  <ul>
+    <li>لوحة مراقبة مركزية: زمن الاستجابة، نسبة النجاح، استهلاك الرموز والتكلفة.</li>
+    <li>إنذار عند تخطي العتبات، وتقارير أسبوعية للتقارير والتنفيذي.</li>
+  </ul>
+
+  <h2 id="roadmap">10) خارطة الطريق</h2>
+  <ul>
+    <li>الربع 1: البنية + الأوركستراتور + الذاكرة.</li>
+    <li>الربع 2: الوكلاء التجاريون وسياسات التكلفة.</li>
+    <li>الربع 3: التحليلات والذكاء + لوحة مراقبة.</li>
+    <li>الربع 4: جودة متقدمة + مراجعات حوكمة.</li>
+  </ul>
+
+  <h2 id="glossary">11) مصطلحات</h2>
+  <ul>
+    <li><b>فهرس الفهارس (Index-of-Indexes):</b> ملخصات قصيرة جدًّا لجميع المحادثات عبر الوكلاء.</li>
+    <li><b>وضع الملخصات:</b> نمط اقتصادي لتقليل الرموز عند اقتراب السقف.</li>
+  </ul>
+</div>
+</body>
+</html>
